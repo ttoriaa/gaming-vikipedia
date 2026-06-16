@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>网页国际象棋 · 人机对战</title>
+    <title>///M Chess</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,8 +15,28 @@
   <body>
     <main class="app">
       <section class="board-wrap">
-        <h1 id="pageTitle">国际象棋 · Human vs AI</h1>
-        <p id="pageSubtitle" class="subtitle">你执白棋，电脑执黑棋。点击棋子并点击目标格子完成走子。</p>
+        <h1 id="pageTitle" class="m-title">///M Chess</h1>
+        <p id="pageSubtitle" class="subtitle">Sheer Driving Pleasure.</p>
+        <div class="top-toolbar">
+          <div class="lang-switch" role="group" aria-label="language switch">
+            <button id="langZhBtn" type="button" class="lang-btn is-active">中文</button>
+            <button id="langEnBtn" type="button" class="lang-btn">English</button>
+          </div>
+
+          <div class="game-controls">
+            <select id="aiLevel">
+              <option id="aiOpt1" value="1">简单（随机）</option>
+              <option id="aiOpt2" value="2" selected>中等（贪心）</option>
+              <option id="aiOpt3" value="3">困难（浅层搜索）</option>
+            </select>
+
+            <div class="buttons">
+              <button id="undoBtn" type="button">悔棋</button>
+              <button id="resetBtn" type="button">重新开始</button>
+            </div>
+          </div>
+        </div>
+
         <div class="board-shell">
           <div id="board" class="board" aria-label="chess board"></div>
           <svg id="trailLayer" class="trail-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
@@ -29,25 +49,6 @@
           <p id="status">加载中...</p>
           <p id="turn">当前回合：-</p>
           <p id="lastMove">上一步：-</p>
-        </div>
-
-        <div class="controls">
-          <div class="lang-switch" role="group" aria-label="language switch">
-            <button id="langZhBtn" type="button" class="lang-btn is-active">中文</button>
-            <button id="langEnBtn" type="button" class="lang-btn">English</button>
-          </div>
-
-          <label id="aiLevelLabel" for="aiLevel">AI 难度</label>
-          <select id="aiLevel">
-            <option id="aiOpt1" value="1">简单（随机）</option>
-            <option id="aiOpt2" value="2" selected>中等（贪心）</option>
-            <option id="aiOpt3" value="3">困难（浅层搜索）</option>
-          </select>
-
-          <div class="buttons">
-            <button id="undoBtn" type="button">悔棋</button>
-            <button id="resetBtn" type="button">重新开始</button>
-          </div>
         </div>
 
         <div class="tips">

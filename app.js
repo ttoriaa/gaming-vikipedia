@@ -6,7 +6,6 @@ const statusTitleEl = document.getElementById("statusTitle");
 const statusEl = document.getElementById("status");
 const turnEl = document.getElementById("turn");
 const lastMoveEl = document.getElementById("lastMove");
-const aiLevelLabelEl = document.getElementById("aiLevelLabel");
 const aiOpt1El = document.getElementById("aiOpt1");
 const aiOpt2El = document.getElementById("aiOpt2");
 const aiOpt3El = document.getElementById("aiOpt3");
@@ -56,8 +55,8 @@ let currentLanguage = "zh";
 const I18N = {
   zh: {
     htmlLang: "zh-CN",
-    title: "国际象棋 · Human vs AI",
-    subtitle: "你执白棋，电脑执黑棋。点击棋子并点击目标格子完成走子。",
+    title: "///M Chess",
+    subtitle: "Sheer Driving Pleasure.",
     statusTitle: "对局状态",
     aiLevelLabel: "AI 难度",
     ai1: "简单（随机）",
@@ -83,8 +82,8 @@ const I18N = {
   },
   en: {
     htmlLang: "en",
-    title: "Chess · Human vs AI",
-    subtitle: "You play White, AI plays Black. Click a piece and then a target square to move.",
+    title: "///M Chess",
+    subtitle: "Sheer Driving Pleasure.",
     statusTitle: "Game Status",
     aiLevelLabel: "AI Difficulty",
     ai1: "Easy (Random)",
@@ -124,7 +123,6 @@ function renderStaticText() {
   pageTitleEl.textContent = t("title");
   pageSubtitleEl.textContent = t("subtitle");
   statusTitleEl.textContent = t("statusTitle");
-  aiLevelLabelEl.textContent = t("aiLevelLabel");
   aiOpt1El.textContent = t("ai1");
   aiOpt2El.textContent = t("ai2");
   aiOpt3El.textContent = t("ai3");
@@ -178,11 +176,11 @@ function renderMoveTrail() {
 
   trailLayerEl.innerHTML = `
     <defs>
-      <marker id="trailArrow" markerWidth="4" markerHeight="4" refX="3.4" refY="2" orient="auto" markerUnits="strokeWidth">
-        <path d="M 0 0 L 4 2 L 0 4 z" fill="#111111"></path>
+      <marker id="trailArrow" markerWidth="3" markerHeight="3" refX="2.7" refY="1.5" orient="auto" markerUnits="strokeWidth">
+        <path d="M 0 0 L 3 1.5 L 0 3 z" fill="#111111"></path>
       </marker>
     </defs>
-    <line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="#111111" stroke-width="1" stroke-linecap="round" marker-end="url(#trailArrow)" stroke-dasharray="2.6 2.2" opacity="0.66"></line>
+    <line x1="${from.x}" y1="${from.y}" x2="${to.x}" y2="${to.y}" stroke="#111111" stroke-width="0.75" stroke-linecap="round" marker-end="url(#trailArrow)" stroke-dasharray="2.4 2.4" opacity="0.66"></line>
   `;
 }
 
