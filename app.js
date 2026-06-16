@@ -19,6 +19,21 @@ const tip3El = document.getElementById("tip3");
 const langZhBtn = document.getElementById("langZhBtn");
 const langEnBtn = document.getElementById("langEnBtn");
 
+const tabButtons = [...document.querySelectorAll(".tab-btn")];
+const tabPanels = [...document.querySelectorAll(".tab-panel")];
+
+const g2048GridEl = document.getElementById("g2048Grid");
+const g2048StateEl = document.getElementById("g2048State");
+const g2048ScoreEl = document.getElementById("g2048Score");
+const g2048BestEl = document.getElementById("g2048Best");
+const g2048NewBtn = document.getElementById("g2048NewBtn");
+
+const sudokuGridEl = document.getElementById("sudokuGrid");
+const sudokuStateEl = document.getElementById("sudokuState");
+const sudokuNewBtn = document.getElementById("sudokuNewBtn");
+const sudokuCheckBtn = document.getElementById("sudokuCheckBtn");
+const sudokuSolveBtn = document.getElementById("sudokuSolveBtn");
+
 const PIECE_MAP = {
   p: "♟",
   r: "♜",
@@ -58,7 +73,6 @@ const I18N = {
     title: "///M Chess",
     subtitle: "Sheer Driving Pleasure.",
     statusTitle: "对局状态",
-    aiLevelLabel: "AI 难度",
     ai1: "简单（随机）",
     ai2: "中等（贪心）",
     ai3: "困难（浅层搜索）",
@@ -78,14 +92,12 @@ const I18N = {
     check: "{turn}被将军",
     aiThinking: "电脑思考中...",
     inProgress: "对局进行中",
-    loading: "加载中...",
   },
   en: {
     htmlLang: "en",
     title: "///M Chess",
     subtitle: "Sheer Driving Pleasure.",
     statusTitle: "Game Status",
-    aiLevelLabel: "AI Difficulty",
     ai1: "Easy (Random)",
     ai2: "Medium (Greedy)",
     ai3: "Hard (Shallow Search)",
@@ -105,7 +117,6 @@ const I18N = {
     check: "{turn} is in check",
     aiThinking: "AI is thinking...",
     inProgress: "Game in progress",
-    loading: "Loading...",
   },
 };
 
@@ -226,7 +237,7 @@ function renderBoard() {
         squareEl.classList.add(matchingMove.captured ? "capture" : "hint");
       }
 
-      if (lastMovePath?.to === square) {
+      if (lastMovePath && lastMovePath.to === square) {
         squareEl.classList.add("last-to");
       }
 
@@ -495,6 +506,305 @@ langEnBtn.addEventListener("click", () => {
   updateStatus();
 });
 
+let g2048Board = [];
+let g2048Score = 0;
+let g2048Best = 0;
+
+const TILE_COLORS = {
+  0: "#1f2937",
+  2: "#dbeafe",
+  4: "#bfdbfe",
+  8: "#93c5fd",
+  16: "#60a5fa",
+  32: "#38bdf8",
+  64: "#0ea5e9",
+  128: "#38bdf8",
+  256: "#3b82f6",
+  512: "#2563eb",
+  1024: "#1d4ed8",
+  2048: "#e8334a",
+};
+
+function init2048Board() {
+  g2048Board = Array.from({ length: 4 }, () => Array(4).fill(0));
+  g2048Score = 0;
+  addRandomTile();
+  addRandomTile();
+  render2048();
+  g2048StateEl.textContent = "进行中";
+}
+
+function addRandomTile() {
+  const empty = [];
+  for (let r = 0; r < 4; r += 1) {
+    for (let c = 0; c < 4; c += 1) {
+      if (g2048Board[r][c] === 0) {
+        empty.push([r, c]);
+      }
+    }
+  }
+  if (!empty.length) {
+    return;
+  }
+  const [r, c] = empty[Math.floor(Math.random() * empty.length)];
+  g2048Board[r][c] = Math.random() < 0.9 ? 2 : 4;
+}
+
+function compactLine(line) {
+  const values = line.filter((n) => n !== 0);
+  const out = [];
+  for (let i = 0; i < values.length; i += 1) {
+    if (values[i] === values[i + 1]) {
+      const merged = values[i] * 2;
+      out.push(merged);
+      g2048Score += merged;
+      i += 1;
+    } else {
+      out.push(values[i]);
+    }
+  }
+  while (out.length < 4) {
+    out.push(0);
+  }
+  return out;
+}
+
+function move2048(direction) {
+  const old = JSON.stringify(g2048Board);
+
+  if (direction === "left") {
+    g2048Board = g2048Board.map((row) => compactLine(row));
+  }
+
+  if (direction === "right") {
+    g2048Board = g2048Board.map((row) => compactLine([...row].reverse()).reverse());
+  }
+
+  if (direction === "up") {
+    for (let c = 0; c < 4; c += 1) {
+      const col = compactLine([g2048Board[0][c], g2048Board[1][c], g2048Board[2][c], g2048Board[3][c]]);
+      for (let r = 0; r < 4; r += 1) {
+        g2048Board[r][c] = col[r];
+      }
+    }
+  }
+
+  if (direction === "down") {
+    for (let c = 0; c < 4; c += 1) {
+      const col = compactLine([g2048Board[3][c], g2048Board[2][c], g2048Board[1][c], g2048Board[0][c]]).reverse();
+      for (let r = 0; r < 4; r += 1) {
+        g2048Board[r][c] = col[r];
+      }
+    }
+  }
+
+  const changed = JSON.stringify(g2048Board) !== old;
+  if (changed) {
+    addRandomTile();
+  }
+  render2048();
+
+  if (!canMove2048()) {
+    g2048StateEl.textContent = "游戏结束";
+  }
+
+  if (has2048Tile()) {
+    g2048StateEl.textContent = "你达成 2048!";
+  }
+}
+
+function has2048Tile() {
+  return g2048Board.some((row) => row.some((n) => n >= 2048));
+}
+
+function canMove2048() {
+  for (let r = 0; r < 4; r += 1) {
+    for (let c = 0; c < 4; c += 1) {
+      const v = g2048Board[r][c];
+      if (v === 0) {
+        return true;
+      }
+      if (r < 3 && v === g2048Board[r + 1][c]) {
+        return true;
+      }
+      if (c < 3 && v === g2048Board[r][c + 1]) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+function render2048() {
+  g2048GridEl.innerHTML = "";
+  g2048Best = Math.max(g2048Best, g2048Score);
+  g2048ScoreEl.textContent = `Score: ${g2048Score}`;
+  g2048BestEl.textContent = `Best: ${g2048Best}`;
+
+  for (let r = 0; r < 4; r += 1) {
+    for (let c = 0; c < 4; c += 1) {
+      const value = g2048Board[r][c];
+      const cell = document.createElement("div");
+      cell.className = `g2048-cell ${value ? "has-value" : ""}`;
+      cell.style.background = TILE_COLORS[value] || "#e8334a";
+      cell.textContent = value || "";
+      g2048GridEl.appendChild(cell);
+    }
+  }
+}
+
+g2048NewBtn.addEventListener("click", init2048Board);
+
+window.addEventListener("keydown", (event) => {
+  const activeTab = document.querySelector(".tab-btn.is-active");
+  const tabName = activeTab ? activeTab.dataset.tab : "chess";
+
+  if (tabName === "g2048") {
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+      event.preventDefault();
+    }
+
+    if (event.key === "ArrowUp") {
+      move2048("up");
+    }
+    if (event.key === "ArrowDown") {
+      move2048("down");
+    }
+    if (event.key === "ArrowLeft") {
+      move2048("left");
+    }
+    if (event.key === "ArrowRight") {
+      move2048("right");
+    }
+  }
+});
+
+const SUDOKU_PUZZLES = [
+  {
+    puzzle: "530070000600195000098000060800060003400803001700020006060000280000419005000080079",
+    solution: "534678912672195348198342567859761423426853791713924856961537284287419635345286179",
+  },
+  {
+    puzzle: "300200000000107000706030500070009080900020004010800050009040301000702000000008006",
+    solution: "351286497492157638786934512275469183938521764614873259829645371163792845547318926",
+  },
+  {
+    puzzle: "009000000080605020501078000000000700706040102004000000000720903090301080000000600",
+    solution: "249813567387695421561478239132569748756342192894187356615724983972361485438951672",
+  },
+];
+
+let sudokuPuzzle = null;
+let sudokuSolution = null;
+
+function buildSudokuGrid() {
+  sudokuGridEl.innerHTML = "";
+  for (let idx = 0; idx < 81; idx += 1) {
+    const input = document.createElement("input");
+    const row = Math.floor(idx / 9);
+    const col = idx % 9;
+    const given = sudokuPuzzle[idx] !== "0";
+    input.type = "text";
+    input.maxLength = 1;
+    input.className = "sudoku-cell";
+    input.dataset.index = String(idx);
+
+    if ((col + 1) % 3 === 0 && col !== 8) {
+      input.classList.add("right-edge");
+    }
+    if ((row + 1) % 3 === 0 && row !== 8) {
+      input.classList.add("bottom-edge");
+    }
+
+    if (given) {
+      input.value = sudokuPuzzle[idx];
+      input.classList.add("given");
+      input.readOnly = true;
+    }
+
+    input.addEventListener("input", () => {
+      input.classList.remove("bad");
+      input.value = input.value.replace(/[^1-9]/g, "").slice(0, 1);
+      sudokuStateEl.textContent = "进行中";
+    });
+
+    sudokuGridEl.appendChild(input);
+  }
+}
+
+function pickSudoku() {
+  const chosen = SUDOKU_PUZZLES[Math.floor(Math.random() * SUDOKU_PUZZLES.length)];
+  sudokuPuzzle = chosen.puzzle;
+  sudokuSolution = chosen.solution;
+  buildSudokuGrid();
+  sudokuStateEl.textContent = "进行中";
+}
+
+function checkSudoku() {
+  const cells = [...sudokuGridEl.querySelectorAll(".sudoku-cell")];
+  let hasError = false;
+  let complete = true;
+
+  cells.forEach((cell, idx) => {
+    if (cell.classList.contains("given")) {
+      return;
+    }
+
+    cell.classList.remove("bad");
+    const value = cell.value;
+    if (!value) {
+      complete = false;
+      return;
+    }
+
+    if (value !== sudokuSolution[idx]) {
+      hasError = true;
+      cell.classList.add("bad");
+    }
+  });
+
+  if (hasError) {
+    sudokuStateEl.textContent = "有错误，已标红";
+    return;
+  }
+
+  if (!complete) {
+    sudokuStateEl.textContent = "暂无错误，继续加油";
+    return;
+  }
+
+  sudokuStateEl.textContent = "完成! Perfect.";
+}
+
+function solveSudoku() {
+  const cells = [...sudokuGridEl.querySelectorAll(".sudoku-cell")];
+  cells.forEach((cell, idx) => {
+    cell.value = sudokuSolution[idx];
+    cell.classList.remove("bad");
+  });
+  sudokuStateEl.textContent = "答案已揭晓";
+}
+
+sudokuNewBtn.addEventListener("click", pickSudoku);
+sudokuCheckBtn.addEventListener("click", checkSudoku);
+sudokuSolveBtn.addEventListener("click", solveSudoku);
+
+function activateTab(tabName) {
+  tabButtons.forEach((btn) => {
+    btn.classList.toggle("is-active", btn.dataset.tab === tabName);
+  });
+
+  tabPanels.forEach((panel) => {
+    panel.classList.toggle("is-active", panel.dataset.panel === tabName);
+  });
+}
+
+tabButtons.forEach((btn) => {
+  btn.addEventListener("click", () => activateTab(btn.dataset.tab));
+});
+
 renderStaticText();
 renderBoard();
 updateStatus();
+init2048Board();
+pickSudoku();

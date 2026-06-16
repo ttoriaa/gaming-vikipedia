@@ -44,10 +44,76 @@ select {
 
 .app {
   width: min(1120px, 92vw);
-  margin: 2.5rem auto;
+  margin: 2rem auto;
+}
+
+.hero {
+  background: var(--card);
+  border: 1px solid #1f2a3a;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px #00000055;
+  padding: 1.1rem 1.2rem;
+}
+
+.subtitle {
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+.m-title {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  letter-spacing: 0.2px;
+  margin: 0;
+}
+
+.m-title::after {
+  content: "";
+  width: 48px;
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--m-light-blue) 0% 33%, var(--m-dark-blue) 33% 66%, var(--m-red) 66% 100%);
+  box-shadow: 0 0 10px #e8334a33;
+}
+
+.tab-bar {
+  margin-top: 0.95rem;
   display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.55rem;
+  background: linear-gradient(120deg, #0f172a, #1e293b);
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 0.4rem;
+}
+
+.tab-btn {
+  border-radius: 10px;
+  border: 1px solid #4b5563;
+  background: #0b1220;
+  color: #dbe3ef;
+  font-weight: 700;
+  padding: 0.55rem 0.6rem;
+  cursor: pointer;
+}
+
+.tab-btn.is-active {
+  border-color: var(--m-red);
+  background: linear-gradient(90deg, var(--m-light-blue) 0% 30%, var(--m-dark-blue) 30% 68%, var(--m-red) 68% 100%);
+  color: #f8fafc;
+}
+
+.tab-panel {
+  display: none;
+  margin-top: 1rem;
   grid-template-columns: 1fr 320px;
   gap: 1.25rem;
+}
+
+.tab-panel.is-active {
+  display: grid;
 }
 
 .board-wrap,
@@ -63,48 +129,26 @@ select {
   padding: 1.25rem;
 }
 
-.subtitle {
-  color: var(--muted);
-  margin-top: 0.2rem;
-}
-
-.m-title {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  letter-spacing: 0.2px;
-}
-
-.m-title::after {
-  content: "";
-  width: 48px;
-  height: 12px;
-  border-radius: 2px;
-  background:
-    linear-gradient(
-      90deg,
-      var(--m-light-blue) 0% 33%,
-      var(--m-dark-blue) 33% 66%,
-      var(--m-red) 66% 100%
-    );
-  box-shadow: 0 0 10px #e8334a33;
-}
-
 .top-toolbar {
-  margin-top: 0.9rem;
+  margin-top: 0.1rem;
   display: grid;
   grid-template-columns: 220px 1fr;
   gap: 0.7rem;
   align-items: end;
-  background:
-    linear-gradient(120deg, #0f172a, #1e293b);
+  background: linear-gradient(120deg, #0f172a, #1e293b);
   border: 1px solid #334155;
   border-radius: 12px;
   padding: 0.6rem;
-  box-shadow:
-    inset 0 1px 0 #ffffff1f,
-    0 8px 20px #0f172a33;
+  box-shadow: inset 0 1px 0 #ffffff1f, 0 8px 20px #0f172a33;
+}
+
+.mini-header h2 {
+  margin: 0;
+}
+
+.mini-header p {
+  color: var(--muted);
+  margin: 0.35rem 0 0;
 }
 
 .game-controls {
@@ -168,12 +212,7 @@ select {
 
 .piece.white-piece {
   color: #f8fafc;
-  text-shadow:
-    0 0 1px #111827,
-    0 1px 0 #111827,
-    1px 0 0 #111827,
-    -1px 0 0 #111827,
-    0 -1px 0 #111827;
+  text-shadow: 0 0 1px #111827, 0 1px 0 #111827, 1px 0 0 #111827, -1px 0 0 #111827, 0 -1px 0 #111827;
 }
 
 .piece.black-piece {
@@ -202,12 +241,9 @@ select {
   position: absolute;
   inset: 14%;
   border-radius: 10px;
-  pointer-events: none;
-}
-
-.square.last-to::before {
   border: 2px solid #111111;
   background: #1111112a;
+  pointer-events: none;
 }
 
 .square.hint::after {
@@ -242,15 +278,11 @@ select {
   padding: 0.9rem;
 }
 
-#status {
+#status,
+#g2048State,
+#sudokuState {
   color: var(--accent);
   font-weight: 700;
-}
-
-.controls label {
-  display: block;
-  margin-bottom: 0.35rem;
-  font-weight: 600;
 }
 
 .lang-switch {
@@ -273,13 +305,7 @@ select {
 
 .lang-btn.is-active {
   border-color: var(--m-red);
-  background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--m-light-blue) 85%, #fff 15%) 0% 30%,
-      var(--m-dark-blue) 30% 68%,
-      var(--m-red) 68% 100%
-    );
+  background: linear-gradient(90deg, color-mix(in srgb, var(--m-light-blue) 85%, #fff 15%) 0% 30%, var(--m-dark-blue) 30% 68%, var(--m-red) 68% 100%);
   color: #f8fafc;
   box-shadow: 0 1px 2px #0f172a55;
 }
@@ -298,6 +324,14 @@ button {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.55rem;
   min-width: 215px;
+}
+
+.buttons.single {
+  grid-template-columns: 1fr;
+}
+
+.buttons.triple {
+  grid-template-columns: 1fr;
 }
 
 button {
@@ -329,14 +363,9 @@ button:active {
   color: #f8fafc;
 }
 
-.buttons button:last-child:hover {
-  border-color: #9f1239;
-  background: linear-gradient(180deg, #ff6e82, #d61f46);
-}
-
-.buttons button:first-child:hover {
-  border-color: #1d4ed8;
-  background: linear-gradient(180deg, #46a0ff, #1657ba);
+.buttons.triple button:nth-child(2) {
+  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
+  border-color: #1e3a8a;
 }
 
 .tips ul {
@@ -345,8 +374,80 @@ button:active {
   color: var(--muted);
 }
 
+.g2048-grid {
+  margin-top: 1rem;
+  width: min(78vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 14px;
+  background: #111827;
+  border: 8px solid #1f2937;
+  box-shadow: inset 0 0 0 2px #0000001f;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding: 0.55rem;
+}
+
+.g2048-cell {
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: clamp(1.05rem, 3vw, 2rem);
+  background: #1f2937;
+  color: #94a3b8;
+}
+
+.g2048-cell.has-value {
+  color: #0b1220;
+}
+
+.sudoku-grid {
+  margin-top: 1rem;
+  width: min(78vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 14px;
+  border: 8px solid #1f2937;
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  background: #0f172a;
+  overflow: hidden;
+}
+
+.sudoku-cell {
+  border: 1px solid #334155;
+  background: #0b1220;
+  color: #e2e8f0;
+  font-size: clamp(0.9rem, 2.4vw, 1.35rem);
+  text-align: center;
+  font-weight: 700;
+  outline: none;
+}
+
+.sudoku-cell:focus {
+  box-shadow: inset 0 0 0 2px #60a5fa;
+}
+
+.sudoku-cell.given {
+  color: #f8fafc;
+  background: #1e293b;
+}
+
+.sudoku-cell.bad {
+  background: #3f1d2e;
+  color: #fecdd3;
+}
+
+.sudoku-cell.right-edge {
+  border-right: 2px solid #64748b;
+}
+
+.sudoku-cell.bottom-edge {
+  border-bottom: 2px solid #64748b;
+}
+
 @media (max-width: 960px) {
-  .app {
+  .tab-panel {
     grid-template-columns: 1fr;
   }
 
@@ -357,6 +458,7 @@ button:active {
 
   .game-controls {
     gap: 0.45rem;
+    flex-wrap: wrap;
   }
 
   .game-controls #aiLevel {
@@ -367,8 +469,9 @@ button:active {
     min-width: 0;
   }
 
-  .board-shell {
+  .board-shell,
+  .g2048-grid,
+  .sudoku-grid {
     width: 100%;
   }
-
 }

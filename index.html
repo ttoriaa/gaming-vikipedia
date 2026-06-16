@@ -14,52 +14,126 @@
   </head>
   <body>
     <main class="app">
-      <section class="board-wrap">
+      <header class="hero">
         <h1 id="pageTitle" class="m-title">///M Chess</h1>
         <p id="pageSubtitle" class="subtitle">Sheer Driving Pleasure.</p>
-        <div class="top-toolbar">
-          <div class="lang-switch" role="group" aria-label="language switch">
-            <button id="langZhBtn" type="button" class="lang-btn is-active">中文</button>
-            <button id="langEnBtn" type="button" class="lang-btn">English</button>
-          </div>
+        <nav class="tab-bar" aria-label="Game Tabs">
+          <button class="tab-btn is-active" data-tab="chess" type="button">Chess</button>
+          <button class="tab-btn" data-tab="g2048" type="button">2048</button>
+          <button class="tab-btn" data-tab="sudoku" type="button">Sudoku</button>
+        </nav>
+      </header>
 
-          <div class="game-controls">
-            <select id="aiLevel">
-              <option id="aiOpt1" value="1">简单（随机）</option>
-              <option id="aiOpt2" value="2" selected>中等（贪心）</option>
-              <option id="aiOpt3" value="3">困难（浅层搜索）</option>
-            </select>
+      <section class="tab-panel is-active" data-panel="chess">
+        <section class="board-wrap">
+          <div class="top-toolbar">
+            <div class="lang-switch" role="group" aria-label="language switch">
+              <button id="langZhBtn" type="button" class="lang-btn is-active">中文</button>
+              <button id="langEnBtn" type="button" class="lang-btn">English</button>
+            </div>
 
-            <div class="buttons">
-              <button id="undoBtn" type="button">悔棋</button>
-              <button id="resetBtn" type="button">重新开始</button>
+            <div class="game-controls">
+              <select id="aiLevel">
+                <option id="aiOpt1" value="1">简单（随机）</option>
+                <option id="aiOpt2" value="2" selected>中等（贪心）</option>
+                <option id="aiOpt3" value="3">困难（浅层搜索）</option>
+              </select>
+
+              <div class="buttons">
+                <button id="undoBtn" type="button">悔棋</button>
+                <button id="resetBtn" type="button">重新开始</button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="board-shell">
-          <div id="board" class="board" aria-label="chess board"></div>
-          <svg id="trailLayer" class="trail-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
-        </div>
+          <div class="board-shell">
+            <div id="board" class="board" aria-label="chess board"></div>
+            <svg id="trailLayer" class="trail-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="status-card">
+            <h2 id="statusTitle">对局状态</h2>
+            <p id="status">加载中...</p>
+            <p id="turn">当前回合：-</p>
+            <p id="lastMove">上一步：-</p>
+          </div>
+
+          <div class="tips">
+            <h3 id="tipsTitle">说明</h3>
+            <ul>
+              <li id="tip1">支持将军、将死、和棋判定。</li>
+              <li id="tip2">兵升变默认升后。</li>
+              <li id="tip3">悔棋会回退双方各一步。</li>
+            </ul>
+          </div>
+        </aside>
       </section>
 
-      <aside class="panel">
-        <div class="status-card">
-          <h2 id="statusTitle">对局状态</h2>
-          <p id="status">加载中...</p>
-          <p id="turn">当前回合：-</p>
-          <p id="lastMove">上一步：-</p>
-        </div>
+      <section class="tab-panel" data-panel="g2048">
+        <section class="board-wrap">
+          <div class="mini-header">
+            <h2>///M 2048</h2>
+            <p>合并数字，冲击 2048。方向键控制。</p>
+          </div>
+          <div id="g2048Grid" class="g2048-grid" aria-label="2048 board"></div>
+        </section>
 
-        <div class="tips">
-          <h3 id="tipsTitle">说明</h3>
-          <ul>
-            <li id="tip1">支持将军、将死、和棋判定。</li>
-            <li id="tip2">兵升变默认升后。</li>
-            <li id="tip3">悔棋会回退双方各一步。</li>
-          </ul>
-        </div>
-      </aside>
+        <aside class="panel">
+          <div class="status-card">
+            <h2>Game Status</h2>
+            <p id="g2048State">准备开始</p>
+            <p id="g2048Score">Score: 0</p>
+            <p id="g2048Best">Best: 0</p>
+          </div>
+
+          <div class="buttons single">
+            <button id="g2048NewBtn" type="button">新开一局</button>
+          </div>
+
+          <div class="tips">
+            <h3>Tips</h3>
+            <ul>
+              <li>同数字相撞会合并并得分。</li>
+              <li>每步后随机出现一个新数字。</li>
+              <li>无法移动时游戏结束。</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <section class="tab-panel" data-panel="sudoku">
+        <section class="board-wrap">
+          <div class="mini-header">
+            <h2>///M Sudoku</h2>
+            <p>填满 9x9 网格，让每行、每列、每宫都包含 1-9。</p>
+          </div>
+          <div id="sudokuGrid" class="sudoku-grid" aria-label="sudoku board"></div>
+        </section>
+
+        <aside class="panel">
+          <div class="status-card">
+            <h2>Puzzle Status</h2>
+            <p id="sudokuState">进行中</p>
+          </div>
+
+          <div class="buttons triple">
+            <button id="sudokuNewBtn" type="button">新题</button>
+            <button id="sudokuCheckBtn" type="button">检查</button>
+            <button id="sudokuSolveBtn" type="button">揭晓答案</button>
+          </div>
+
+          <div class="tips">
+            <h3>Tips</h3>
+            <ul>
+              <li>点击格子后输入 1-9。</li>
+              <li>只允许修改非预填数字。</li>
+              <li>可随时检查或直接揭晓答案。</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
     </main>
 
     <script src="./vendor.chess.js"></script>
