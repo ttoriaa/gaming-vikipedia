@@ -74,15 +74,20 @@
       <section id="panel-g2048" class="tab-panel" data-panel="g2048" role="tabpanel" hidden>
         <section class="board-wrap">
           <div class="mini-header">
-            <h2>///M 2048</h2>
-            <p>合并数字，冲击 2048。方向键控制。</p>
+            <h2 id="g2048Title">///M 2048</h2>
+            <p id="g2048Desc">合并数字，冲击 2048。方向键控制。</p>
           </div>
           <div id="g2048Grid" class="g2048-grid" aria-label="2048 board"></div>
         </section>
 
         <aside class="panel">
+          <div class="lang-switch" role="group" aria-label="2048 language switch">
+            <button id="g2048LangZhBtn" type="button" class="lang-btn is-active">中文</button>
+            <button id="g2048LangEnBtn" type="button" class="lang-btn">English</button>
+          </div>
+
           <div class="status-card">
-            <h2>Game Status</h2>
+            <h2 id="g2048StatusTitle">Game Status</h2>
             <p id="g2048State">准备开始</p>
             <p id="g2048Score">Score: 0</p>
             <p id="g2048Best">Best: 0</p>
@@ -93,11 +98,11 @@
           </div>
 
           <div class="tips">
-            <h3>Tips</h3>
+            <h3 id="g2048TipsTitle">Tips</h3>
             <ul>
-              <li>同数字相撞会合并并得分。</li>
-              <li>每步后随机出现一个新数字。</li>
-              <li>无法移动时游戏结束。</li>
+              <li id="g2048Tip1">同数字相撞会合并并得分。</li>
+              <li id="g2048Tip2">每步后随机出现一个新数字。</li>
+              <li id="g2048Tip3">无法移动时游戏结束。</li>
             </ul>
           </div>
         </aside>
@@ -106,15 +111,20 @@
       <section id="panel-sudoku" class="tab-panel" data-panel="sudoku" role="tabpanel" hidden>
         <section class="board-wrap">
           <div class="mini-header">
-            <h2>///M Sudoku</h2>
-            <p>填满 9x9 网格，让每行、每列、每宫都包含 1-9。</p>
+            <h2 id="sudokuTitle">///M Sudoku</h2>
+            <p id="sudokuDesc">填满 9x9 网格，让每行、每列、每宫都包含 1-9。</p>
           </div>
           <div id="sudokuGrid" class="sudoku-grid" aria-label="sudoku board"></div>
         </section>
 
         <aside class="panel">
+          <div class="lang-switch" role="group" aria-label="sudoku language switch">
+            <button id="sudokuLangZhBtn" type="button" class="lang-btn is-active">中文</button>
+            <button id="sudokuLangEnBtn" type="button" class="lang-btn">English</button>
+          </div>
+
           <div class="status-card">
-            <h2>Puzzle Status</h2>
+            <h2 id="sudokuStatusTitle">Puzzle Status</h2>
             <p id="sudokuState">进行中</p>
           </div>
 
@@ -125,11 +135,11 @@
           </div>
 
           <div class="tips">
-            <h3>Tips</h3>
+            <h3 id="sudokuTipsTitle">Tips</h3>
             <ul>
-              <li>点击格子后输入 1-9。</li>
-              <li>只允许修改非预填数字。</li>
-              <li>可随时检查或直接揭晓答案。</li>
+              <li id="sudokuTip1">点击格子后输入 1-9。</li>
+              <li id="sudokuTip2">只允许修改非预填数字。</li>
+              <li id="sudokuTip3">可随时检查或直接揭晓答案。</li>
             </ul>
           </div>
         </aside>

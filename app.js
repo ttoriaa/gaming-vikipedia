@@ -23,16 +23,34 @@ const tabButtons = [...document.querySelectorAll(".tab-btn")];
 const tabPanels = [...document.querySelectorAll(".tab-panel")];
 
 const g2048GridEl = document.getElementById("g2048Grid");
+const g2048TitleEl = document.getElementById("g2048Title");
+const g2048DescEl = document.getElementById("g2048Desc");
+const g2048StatusTitleEl = document.getElementById("g2048StatusTitle");
 const g2048StateEl = document.getElementById("g2048State");
 const g2048ScoreEl = document.getElementById("g2048Score");
 const g2048BestEl = document.getElementById("g2048Best");
 const g2048NewBtn = document.getElementById("g2048NewBtn");
+const g2048TipsTitleEl = document.getElementById("g2048TipsTitle");
+const g2048Tip1El = document.getElementById("g2048Tip1");
+const g2048Tip2El = document.getElementById("g2048Tip2");
+const g2048Tip3El = document.getElementById("g2048Tip3");
+const g2048LangZhBtn = document.getElementById("g2048LangZhBtn");
+const g2048LangEnBtn = document.getElementById("g2048LangEnBtn");
 
 const sudokuGridEl = document.getElementById("sudokuGrid");
+const sudokuTitleEl = document.getElementById("sudokuTitle");
+const sudokuDescEl = document.getElementById("sudokuDesc");
+const sudokuStatusTitleEl = document.getElementById("sudokuStatusTitle");
 const sudokuStateEl = document.getElementById("sudokuState");
 const sudokuNewBtn = document.getElementById("sudokuNewBtn");
 const sudokuCheckBtn = document.getElementById("sudokuCheckBtn");
 const sudokuSolveBtn = document.getElementById("sudokuSolveBtn");
+const sudokuTipsTitleEl = document.getElementById("sudokuTipsTitle");
+const sudokuTip1El = document.getElementById("sudokuTip1");
+const sudokuTip2El = document.getElementById("sudokuTip2");
+const sudokuTip3El = document.getElementById("sudokuTip3");
+const sudokuLangZhBtn = document.getElementById("sudokuLangZhBtn");
+const sudokuLangEnBtn = document.getElementById("sudokuLangEnBtn");
 
 const PIECE_MAP = {
   p: "♟",
@@ -509,6 +527,76 @@ langEnBtn.addEventListener("click", () => {
 let g2048Board = [];
 let g2048Score = 0;
 let g2048Best = 0;
+let g2048Language = "zh";
+let g2048StatusKey = "ready";
+
+const G2048_I18N = {
+  zh: {
+    title: "///M 2048",
+    desc: "合并数字，冲击 2048。方向键控制。",
+    statusTitle: "游戏状态",
+    stateReady: "准备开始",
+    statePlaying: "进行中",
+    stateGameOver: "游戏结束",
+    stateWin: "你达成 2048!",
+    score: "分数",
+    best: "最高分",
+    newGame: "新开一局",
+    tipsTitle: "提示",
+    tip1: "同数字相撞会合并并得分。",
+    tip2: "每步后随机出现一个新数字。",
+    tip3: "无法移动时游戏结束。",
+  },
+  en: {
+    title: "///M 2048",
+    desc: "Merge tiles and chase 2048. Use arrow keys.",
+    statusTitle: "Game Status",
+    stateReady: "Ready",
+    statePlaying: "In progress",
+    stateGameOver: "Game over",
+    stateWin: "You reached 2048!",
+    score: "Score",
+    best: "Best",
+    newGame: "New Game",
+    tipsTitle: "Tips",
+    tip1: "Matching tiles merge and increase your score.",
+    tip2: "A new tile appears after each valid move.",
+    tip3: "The game ends when no move is possible.",
+  },
+};
+
+function t2048(key) {
+  return G2048_I18N[g2048Language][key];
+}
+
+function get2048StateText() {
+  if (g2048StatusKey === "ready") {
+    return t2048("stateReady");
+  }
+  if (g2048StatusKey === "playing") {
+    return t2048("statePlaying");
+  }
+  if (g2048StatusKey === "gameOver") {
+    return t2048("stateGameOver");
+  }
+  return t2048("stateWin");
+}
+
+function render2048StaticText() {
+  g2048TitleEl.textContent = t2048("title");
+  g2048DescEl.textContent = t2048("desc");
+  g2048StatusTitleEl.textContent = t2048("statusTitle");
+  g2048StateEl.textContent = get2048StateText();
+  g2048ScoreEl.textContent = `${t2048("score")}: ${g2048Score}`;
+  g2048BestEl.textContent = `${t2048("best")}: ${g2048Best}`;
+  g2048NewBtn.textContent = t2048("newGame");
+  g2048TipsTitleEl.textContent = t2048("tipsTitle");
+  g2048Tip1El.textContent = t2048("tip1");
+  g2048Tip2El.textContent = t2048("tip2");
+  g2048Tip3El.textContent = t2048("tip3");
+  g2048LangZhBtn.classList.toggle("is-active", g2048Language === "zh");
+  g2048LangEnBtn.classList.toggle("is-active", g2048Language === "en");
+}
 
 const TILE_COLORS = {
   0: "#1f2937",
@@ -528,10 +616,10 @@ const TILE_COLORS = {
 function init2048Board() {
   g2048Board = Array.from({ length: 4 }, () => Array(4).fill(0));
   g2048Score = 0;
+  g2048StatusKey = "playing";
   addRandomTile();
   addRandomTile();
   render2048();
-  g2048StateEl.textContent = "进行中";
 }
 
 function addRandomTile() {
@@ -600,16 +688,19 @@ function move2048(direction) {
 
   const changed = JSON.stringify(g2048Board) !== old;
   if (changed) {
+    g2048StatusKey = "playing";
     addRandomTile();
   }
   render2048();
 
   if (!canMove2048()) {
-    g2048StateEl.textContent = "游戏结束";
+    g2048StatusKey = "gameOver";
+    render2048StaticText();
   }
 
   if (has2048Tile()) {
-    g2048StateEl.textContent = "你达成 2048!";
+    g2048StatusKey = "win";
+    render2048StaticText();
   }
 }
 
@@ -638,8 +729,7 @@ function canMove2048() {
 function render2048() {
   g2048GridEl.innerHTML = "";
   g2048Best = Math.max(g2048Best, g2048Score);
-  g2048ScoreEl.textContent = `Score: ${g2048Score}`;
-  g2048BestEl.textContent = `Best: ${g2048Best}`;
+  render2048StaticText();
 
   for (let r = 0; r < 4; r += 1) {
     for (let c = 0; c < 4; c += 1) {
@@ -654,6 +744,14 @@ function render2048() {
 }
 
 g2048NewBtn.addEventListener("click", init2048Board);
+g2048LangZhBtn.addEventListener("click", () => {
+  g2048Language = "zh";
+  render2048StaticText();
+});
+g2048LangEnBtn.addEventListener("click", () => {
+  g2048Language = "en";
+  render2048StaticText();
+});
 
 window.addEventListener("keydown", (event) => {
   const activeTab = document.querySelector(".tab-btn.is-active");
@@ -696,6 +794,81 @@ const SUDOKU_PUZZLES = [
 
 let sudokuPuzzle = null;
 let sudokuSolution = null;
+let sudokuLanguage = "zh";
+let sudokuStatusKey = "playing";
+
+const SUDOKU_I18N = {
+  zh: {
+    title: "///M Sudoku",
+    desc: "填满 9x9 网格，让每行、每列、每宫都包含 1-9。",
+    statusTitle: "题目状态",
+    statePlaying: "进行中",
+    stateError: "有错误，已标红",
+    statePartial: "暂无错误，继续加油",
+    stateComplete: "完成! Perfect.",
+    stateReveal: "答案已揭晓",
+    newGame: "新题",
+    check: "检查",
+    solve: "揭晓答案",
+    tipsTitle: "提示",
+    tip1: "点击格子后输入 1-9。",
+    tip2: "只允许修改非预填数字。",
+    tip3: "可随时检查或直接揭晓答案。",
+  },
+  en: {
+    title: "///M Sudoku",
+    desc: "Fill the 9x9 grid so each row, column, and box contains 1-9.",
+    statusTitle: "Puzzle Status",
+    statePlaying: "In progress",
+    stateError: "There are mistakes, highlighted in red",
+    statePartial: "No mistakes so far, keep going",
+    stateComplete: "Complete! Perfect.",
+    stateReveal: "Solution revealed",
+    newGame: "New Puzzle",
+    check: "Check",
+    solve: "Reveal Solution",
+    tipsTitle: "Tips",
+    tip1: "Click a cell, then enter 1-9.",
+    tip2: "Only non-given cells are editable.",
+    tip3: "Check anytime or reveal the full solution.",
+  },
+};
+
+function tSudoku(key) {
+  return SUDOKU_I18N[sudokuLanguage][key];
+}
+
+function getSudokuStateText() {
+  if (sudokuStatusKey === "playing") {
+    return tSudoku("statePlaying");
+  }
+  if (sudokuStatusKey === "error") {
+    return tSudoku("stateError");
+  }
+  if (sudokuStatusKey === "partial") {
+    return tSudoku("statePartial");
+  }
+  if (sudokuStatusKey === "complete") {
+    return tSudoku("stateComplete");
+  }
+  return tSudoku("stateReveal");
+}
+
+function renderSudokuStaticText() {
+  sudokuTitleEl.textContent = tSudoku("title");
+  sudokuDescEl.textContent = tSudoku("desc");
+  sudokuStatusTitleEl.textContent = tSudoku("statusTitle");
+  sudokuStateEl.textContent = getSudokuStateText();
+  sudokuNewBtn.textContent = tSudoku("newGame");
+  sudokuCheckBtn.textContent = tSudoku("check");
+  sudokuSolveBtn.textContent = tSudoku("solve");
+  sudokuTipsTitleEl.textContent = tSudoku("tipsTitle");
+  sudokuTip1El.textContent = tSudoku("tip1");
+  sudokuTip2El.textContent = tSudoku("tip2");
+  sudokuTip3El.textContent = tSudoku("tip3");
+  sudokuLangZhBtn.classList.toggle("is-active", sudokuLanguage === "zh");
+  sudokuLangEnBtn.classList.toggle("is-active", sudokuLanguage === "en");
+}
 
 function buildSudokuGrid() {
   sudokuGridEl.innerHTML = "";
@@ -725,7 +898,8 @@ function buildSudokuGrid() {
     input.addEventListener("input", () => {
       input.classList.remove("bad");
       input.value = input.value.replace(/[^1-9]/g, "").slice(0, 1);
-      sudokuStateEl.textContent = "进行中";
+      sudokuStatusKey = "playing";
+      renderSudokuStaticText();
     });
 
     sudokuGridEl.appendChild(input);
@@ -737,7 +911,8 @@ function pickSudoku() {
   sudokuPuzzle = chosen.puzzle;
   sudokuSolution = chosen.solution;
   buildSudokuGrid();
-  sudokuStateEl.textContent = "进行中";
+  sudokuStatusKey = "playing";
+  renderSudokuStaticText();
 }
 
 function checkSudoku() {
@@ -764,16 +939,19 @@ function checkSudoku() {
   });
 
   if (hasError) {
-    sudokuStateEl.textContent = "有错误，已标红";
+    sudokuStatusKey = "error";
+    renderSudokuStaticText();
     return;
   }
 
   if (!complete) {
-    sudokuStateEl.textContent = "暂无错误，继续加油";
+    sudokuStatusKey = "partial";
+    renderSudokuStaticText();
     return;
   }
 
-  sudokuStateEl.textContent = "完成! Perfect.";
+  sudokuStatusKey = "complete";
+  renderSudokuStaticText();
 }
 
 function solveSudoku() {
@@ -782,12 +960,21 @@ function solveSudoku() {
     cell.value = sudokuSolution[idx];
     cell.classList.remove("bad");
   });
-  sudokuStateEl.textContent = "答案已揭晓";
+  sudokuStatusKey = "reveal";
+  renderSudokuStaticText();
 }
 
 sudokuNewBtn.addEventListener("click", pickSudoku);
 sudokuCheckBtn.addEventListener("click", checkSudoku);
 sudokuSolveBtn.addEventListener("click", solveSudoku);
+sudokuLangZhBtn.addEventListener("click", () => {
+  sudokuLanguage = "zh";
+  renderSudokuStaticText();
+});
+sudokuLangEnBtn.addEventListener("click", () => {
+  sudokuLanguage = "en";
+  renderSudokuStaticText();
+});
 
 function activateTab(tabName) {
   tabButtons.forEach((btn) => {
