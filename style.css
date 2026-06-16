@@ -81,7 +81,7 @@ select {
 .tab-bar {
   margin-top: 0.95rem;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.55rem;
   background: linear-gradient(120deg, #0f172a, #1e293b);
   border: 1px solid #334155;
@@ -447,6 +447,81 @@ button:active {
 }
 
 .g2048-dpad button {
+  min-height: 42px;
+  font-size: 1.1rem;
+  background: linear-gradient(180deg, #1e293b, #0f172a);
+  border-color: #334155;
+}
+
+.snake-board {
+  margin-top: 1rem;
+  width: min(78vw, 560px);
+  aspect-ratio: 1;
+  border-radius: 14px;
+  border: 8px solid #1f2937;
+  background: #050f22;
+  display: grid;
+  grid-template-columns: repeat(20, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+}
+
+.snake-cell {
+  background: #081327;
+}
+
+.snake-cell.snake-head {
+  background: #38bdf8;
+}
+
+.snake-cell.snake-body {
+  background: #1d4ed8;
+}
+
+.snake-cell.snake-food {
+  background: #e8334a;
+}
+
+.snake-touch-controls {
+  margin-top: 0.9rem;
+  border: 1px solid #2f3d52;
+  border-radius: 12px;
+  padding: 0.7rem;
+  background: #0b1220a8;
+}
+
+.snake-touch-controls p {
+  margin: 0 0 0.5rem;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.snake-dpad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    ". up ."
+    "left down right";
+  gap: 0.45rem;
+}
+
+#snakeUpBtn {
+  grid-area: up;
+}
+
+#snakeLeftBtn {
+  grid-area: left;
+}
+
+#snakeDownBtn {
+  grid-area: down;
+}
+
+#snakeRightBtn {
+  grid-area: right;
+}
+
+.snake-dpad button {
   min-height: 42px;
   font-size: 1.1rem;
   background: linear-gradient(180deg, #1e293b, #0f172a);

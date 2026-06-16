@@ -57,6 +57,17 @@ const sudokuTip3El = document.getElementById("sudokuTip3");
 const sudokuLangZhBtn = document.getElementById("sudokuLangZhBtn");
 const sudokuLangEnBtn = document.getElementById("sudokuLangEnBtn");
 
+const snakeBoardEl = document.getElementById("snakeBoard");
+const snakeStateEl = document.getElementById("snakeState");
+const snakeScoreEl = document.getElementById("snakeScore");
+const snakeBestEl = document.getElementById("snakeBest");
+const snakeStartBtn = document.getElementById("snakeStartBtn");
+const snakeResetBtn = document.getElementById("snakeResetBtn");
+const snakeUpBtn = document.getElementById("snakeUpBtn");
+const snakeLeftBtn = document.getElementById("snakeLeftBtn");
+const snakeDownBtn = document.getElementById("snakeDownBtn");
+const snakeRightBtn = document.getElementById("snakeRightBtn");
+
 const PIECE_MAP = {
   p: "♟",
   r: "♜",
@@ -814,11 +825,11 @@ window.addEventListener("keydown", (event) => {
   const activeTab = document.querySelector(".tab-btn.is-active");
   const tabName = activeTab ? activeTab.dataset.tab : "chess";
 
-  if (tabName === "g2048") {
-    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
-      event.preventDefault();
-    }
+  if ((tabName === "g2048" || tabName === "snake") && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+    event.preventDefault();
+  }
 
+  if (tabName === "g2048") {
     if (event.key === "ArrowUp") {
       move2048("up");
     }
@@ -830,6 +841,21 @@ window.addEventListener("keydown", (event) => {
     }
     if (event.key === "ArrowRight") {
       move2048("right");
+    }
+  }
+
+  if (tabName === "snake") {
+    if (event.key === "ArrowUp") {
+      setSnakeDirection("up");
+    }
+    if (event.key === "ArrowDown") {
+      setSnakeDirection("down");
+    }
+    if (event.key === "ArrowLeft") {
+      setSnakeDirection("left");
+    }
+    if (event.key === "ArrowRight") {
+      setSnakeDirection("right");
     }
   }
 });
@@ -853,6 +879,17 @@ let sudokuPuzzle = null;
 let sudokuSolution = null;
 let sudokuLanguage = "zh";
 let sudokuStatusKey = "playing";
+
+const SNAKE_SIZE = 20;
+let snake = [];
+let snakeDirection = "right";
+let snakeNextDirection = "right";
+let snakeFood = null;
+let snakeScore = 0;
+let snakeBest = 0;
+let snakeSpeed = 170;
+let snakeStatus = "ready";
+let snakeTimerId = null;
 
 const SUDOKU_I18N = {
   zh: {
@@ -1033,6 +1070,159 @@ sudokuLangEnBtn.addEventListener("click", () => {
   renderSudokuStaticText();
 });
 
+function renderSnakeStatus() {
+  const statusText = {
+    ready: "准备开始",
+    running: "进行中",
+    paused: "已暂停",
+    gameOver: "游戏结束",
+  }[snakeStatus];
+
+  snakeStateEl.textContent = statusText;
+  snakeScoreEl.textContent = `Score: ${snakeScore}`;
+  snakeBestEl.textContent = `Best: ${snakeBest}`;
+}
+
+function snakeOccupied(x, y) {
+  return snake.some((part) => part.x === x && part.y === y);
+}
+
+function spawnSnakeFood() {
+  const empty = [];
+  for (let y = 0; y < SNAKE_SIZE; y += 1) {
+    for (let x = 0; x < SNAKE_SIZE; x += 1) {
+      if (!snakeOccupied(x, y)) {
+        empty.push({ x, y });
+      }
+    }
+  }
+  snakeFood = empty[Math.floor(Math.random() * empty.length)] || { x: 0, y: 0 };
+}
+
+function renderSnakeBoard() {
+  snakeBoardEl.innerHTML = "";
+
+  for (let y = 0; y < SNAKE_SIZE; y += 1) {
+    for (let x = 0; x < SNAKE_SIZE; x += 1) {
+      const cell = document.createElement("div");
+      cell.className = "snake-cell";
+
+      if (snakeFood && snakeFood.x === x && snakeFood.y === y) {
+        cell.classList.add("snake-food");
+      }
+
+      const idx = snake.findIndex((part) => part.x === x && part.y === y);
+      if (idx === 0) {
+        cell.classList.add("snake-head");
+      } else if (idx > 0) {
+        cell.classList.add("snake-body");
+      }
+
+      snakeBoardEl.appendChild(cell);
+    }
+  }
+
+  renderSnakeStatus();
+}
+
+function setSnakeDirection(direction) {
+  const opposite = {
+    up: "down",
+    down: "up",
+    left: "right",
+    right: "left",
+  };
+  if (opposite[direction] === snakeDirection) {
+    return;
+  }
+  snakeNextDirection = direction;
+}
+
+function clearSnakeTimer() {
+  if (snakeTimerId) {
+    window.clearInterval(snakeTimerId);
+    snakeTimerId = null;
+  }
+}
+
+function snakeTick() {
+  snakeDirection = snakeNextDirection;
+  const head = snake[0];
+  const delta = {
+    up: { x: 0, y: -1 },
+    down: { x: 0, y: 1 },
+    left: { x: -1, y: 0 },
+    right: { x: 1, y: 0 },
+  }[snakeDirection];
+
+  const next = { x: head.x + delta.x, y: head.y + delta.y };
+  if (next.x < 0 || next.y < 0 || next.x >= SNAKE_SIZE || next.y >= SNAKE_SIZE || snakeOccupied(next.x, next.y)) {
+    snakeStatus = "gameOver";
+    clearSnakeTimer();
+    renderSnakeBoard();
+    return;
+  }
+
+  snake.unshift(next);
+
+  if (snakeFood && next.x === snakeFood.x && next.y === snakeFood.y) {
+    snakeScore += 10;
+    snakeBest = Math.max(snakeBest, snakeScore);
+    snakeSpeed = Math.max(80, snakeSpeed - 4);
+    spawnSnakeFood();
+
+    if (snakeTimerId) {
+      clearSnakeTimer();
+      snakeTimerId = window.setInterval(snakeTick, snakeSpeed);
+    }
+  } else {
+    snake.pop();
+  }
+
+  renderSnakeBoard();
+}
+
+function resetSnake() {
+  clearSnakeTimer();
+  snake = [
+    { x: 10, y: 10 },
+    { x: 9, y: 10 },
+    { x: 8, y: 10 },
+  ];
+  snakeDirection = "right";
+  snakeNextDirection = "right";
+  snakeScore = 0;
+  snakeSpeed = 170;
+  snakeStatus = "ready";
+  spawnSnakeFood();
+  renderSnakeBoard();
+}
+
+function toggleSnakeStartPause() {
+  if (snakeStatus === "running") {
+    snakeStatus = "paused";
+    clearSnakeTimer();
+    renderSnakeStatus();
+    return;
+  }
+
+  if (snakeStatus === "ready" || snakeStatus === "gameOver") {
+    resetSnake();
+  }
+
+  snakeStatus = "running";
+  clearSnakeTimer();
+  snakeTimerId = window.setInterval(snakeTick, snakeSpeed);
+  renderSnakeStatus();
+}
+
+snakeStartBtn.addEventListener("click", toggleSnakeStartPause);
+snakeResetBtn.addEventListener("click", resetSnake);
+snakeUpBtn.addEventListener("click", () => setSnakeDirection("up"));
+snakeLeftBtn.addEventListener("click", () => setSnakeDirection("left"));
+snakeDownBtn.addEventListener("click", () => setSnakeDirection("down"));
+snakeRightBtn.addEventListener("click", () => setSnakeDirection("right"));
+
 function activateTab(tabName) {
   tabButtons.forEach((btn) => {
     const isActive = btn.dataset.tab === tabName;
@@ -1045,6 +1235,12 @@ function activateTab(tabName) {
     panel.classList.toggle("is-active", isActive);
     panel.hidden = !isActive;
   });
+
+  if (tabName !== "snake" && snakeStatus === "running") {
+    snakeStatus = "paused";
+    clearSnakeTimer();
+    renderSnakeStatus();
+  }
 }
 
 tabButtons.forEach((btn) => {
@@ -1056,3 +1252,4 @@ renderBoard();
 updateStatus();
 init2048Board();
 pickSudoku();
+resetSnake();

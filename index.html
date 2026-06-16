@@ -21,6 +21,7 @@
           <button class="tab-btn is-active" data-tab="chess" type="button" role="tab" aria-selected="true" aria-controls="panel-chess">Chess</button>
           <button class="tab-btn" data-tab="g2048" type="button" role="tab" aria-selected="false" aria-controls="panel-g2048">2048</button>
           <button class="tab-btn" data-tab="sudoku" type="button" role="tab" aria-selected="false" aria-controls="panel-sudoku">Sudoku</button>
+          <button class="tab-btn" data-tab="snake" type="button" role="tab" aria-selected="false" aria-controls="panel-snake">Snake</button>
         </nav>
       </header>
 
@@ -149,6 +150,48 @@
               <li id="sudokuTip1">点击格子后输入 1-9。</li>
               <li id="sudokuTip2">只允许修改非预填数字。</li>
               <li id="sudokuTip3">可随时检查或直接揭晓答案。</li>
+            </ul>
+          </div>
+        </aside>
+      </section>
+
+      <section id="panel-snake" class="tab-panel" data-panel="snake" role="tabpanel" hidden>
+        <section class="board-wrap">
+          <div class="mini-header">
+            <h2 id="snakeTitle">///M Snake</h2>
+            <p id="snakeDesc">吃到红点会变长，撞墙或撞到自己就结束。</p>
+          </div>
+          <div id="snakeBoard" class="snake-board" aria-label="snake board"></div>
+          <div class="snake-touch-controls" role="group" aria-label="snake direction controls">
+            <p id="snakeTouchTitle">触控方向</p>
+            <div class="snake-dpad">
+              <button id="snakeUpBtn" type="button" aria-label="Snake Up">↑</button>
+              <button id="snakeLeftBtn" type="button" aria-label="Snake Left">←</button>
+              <button id="snakeDownBtn" type="button" aria-label="Snake Down">↓</button>
+              <button id="snakeRightBtn" type="button" aria-label="Snake Right">→</button>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel">
+          <div class="status-card">
+            <h2 id="snakeStatusTitle">Game Status</h2>
+            <p id="snakeState">准备开始</p>
+            <p id="snakeScore">Score: 0</p>
+            <p id="snakeBest">Best: 0</p>
+          </div>
+
+          <div class="buttons">
+            <button id="snakeStartBtn" type="button">开始 / 暂停</button>
+            <button id="snakeResetBtn" type="button">重新开始</button>
+          </div>
+
+          <div class="tips">
+            <h3 id="snakeTipsTitle">Tips</h3>
+            <ul>
+              <li id="snakeTip1">支持方向键和屏幕方向按钮。</li>
+              <li id="snakeTip2">每吃一个食物得 10 分。</li>
+              <li id="snakeTip3">速度会逐渐变快。</li>
             </ul>
           </div>
         </aside>
