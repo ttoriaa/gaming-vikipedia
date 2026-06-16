@@ -791,11 +791,15 @@ sudokuSolveBtn.addEventListener("click", solveSudoku);
 
 function activateTab(tabName) {
   tabButtons.forEach((btn) => {
-    btn.classList.toggle("is-active", btn.dataset.tab === tabName);
+    const isActive = btn.dataset.tab === tabName;
+    btn.classList.toggle("is-active", isActive);
+    btn.setAttribute("aria-selected", isActive ? "true" : "false");
   });
 
   tabPanels.forEach((panel) => {
-    panel.classList.toggle("is-active", panel.dataset.panel === tabName);
+    const isActive = panel.dataset.panel === tabName;
+    panel.classList.toggle("is-active", isActive);
+    panel.hidden = !isActive;
   });
 }
 

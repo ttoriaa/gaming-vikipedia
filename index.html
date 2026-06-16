@@ -17,14 +17,14 @@
       <header class="hero">
         <h1 id="pageTitle" class="m-title">///M Chess</h1>
         <p id="pageSubtitle" class="subtitle">Sheer Driving Pleasure.</p>
-        <nav class="tab-bar" aria-label="Game Tabs">
-          <button class="tab-btn is-active" data-tab="chess" type="button">Chess</button>
-          <button class="tab-btn" data-tab="g2048" type="button">2048</button>
-          <button class="tab-btn" data-tab="sudoku" type="button">Sudoku</button>
+        <nav class="tab-bar" aria-label="Game Tabs" role="tablist">
+          <button class="tab-btn is-active" data-tab="chess" type="button" role="tab" aria-selected="true" aria-controls="panel-chess">Chess</button>
+          <button class="tab-btn" data-tab="g2048" type="button" role="tab" aria-selected="false" aria-controls="panel-g2048">2048</button>
+          <button class="tab-btn" data-tab="sudoku" type="button" role="tab" aria-selected="false" aria-controls="panel-sudoku">Sudoku</button>
         </nav>
       </header>
 
-      <section class="tab-panel is-active" data-panel="chess">
+      <section id="panel-chess" class="tab-panel is-active" data-panel="chess" role="tabpanel">
         <section class="board-wrap">
           <div class="top-toolbar">
             <div class="lang-switch" role="group" aria-label="language switch">
@@ -71,7 +71,7 @@
         </aside>
       </section>
 
-      <section class="tab-panel" data-panel="g2048">
+      <section id="panel-g2048" class="tab-panel" data-panel="g2048" role="tabpanel" hidden>
         <section class="board-wrap">
           <div class="mini-header">
             <h2>///M 2048</h2>
@@ -103,7 +103,7 @@
         </aside>
       </section>
 
-      <section class="tab-panel" data-panel="sudoku">
+      <section id="panel-sudoku" class="tab-panel" data-panel="sudoku" role="tabpanel" hidden>
         <section class="board-wrap">
           <div class="mini-header">
             <h2>///M Sudoku</h2>

@@ -112,6 +112,10 @@ select {
   gap: 1.25rem;
 }
 
+.tab-panel[hidden] {
+  display: none !important;
+}
+
 .tab-panel.is-active {
   display: grid;
 }
