@@ -30,6 +30,11 @@ const g2048StateEl = document.getElementById("g2048State");
 const g2048ScoreEl = document.getElementById("g2048Score");
 const g2048BestEl = document.getElementById("g2048Best");
 const g2048NewBtn = document.getElementById("g2048NewBtn");
+const g2048TouchTitleEl = document.getElementById("g2048TouchTitle");
+const g2048UpBtn = document.getElementById("g2048UpBtn");
+const g2048LeftBtn = document.getElementById("g2048LeftBtn");
+const g2048DownBtn = document.getElementById("g2048DownBtn");
+const g2048RightBtn = document.getElementById("g2048RightBtn");
 const g2048TipsTitleEl = document.getElementById("g2048TipsTitle");
 const g2048Tip1El = document.getElementById("g2048Tip1");
 const g2048Tip2El = document.getElementById("g2048Tip2");
@@ -533,7 +538,7 @@ let g2048StatusKey = "ready";
 const G2048_I18N = {
   zh: {
     title: "///M 2048",
-    desc: "合并数字，冲击 2048。方向键控制。",
+    desc: "合并数字，冲击 2048。支持方向键、滑动手势和屏幕方向按钮。",
     statusTitle: "游戏状态",
     stateReady: "准备开始",
     statePlaying: "进行中",
@@ -542,6 +547,7 @@ const G2048_I18N = {
     score: "分数",
     best: "最高分",
     newGame: "新开一局",
+    touchTitle: "触控方向",
     tipsTitle: "提示",
     tip1: "同数字相撞会合并并得分。",
     tip2: "每步后随机出现一个新数字。",
@@ -549,7 +555,7 @@ const G2048_I18N = {
   },
   en: {
     title: "///M 2048",
-    desc: "Merge tiles and chase 2048. Use arrow keys.",
+    desc: "Merge tiles and chase 2048. Use arrow keys, swipe gestures, or on-screen buttons.",
     statusTitle: "Game Status",
     stateReady: "Ready",
     statePlaying: "In progress",
@@ -558,6 +564,7 @@ const G2048_I18N = {
     score: "Score",
     best: "Best",
     newGame: "New Game",
+    touchTitle: "Touch Controls",
     tipsTitle: "Tips",
     tip1: "Matching tiles merge and increase your score.",
     tip2: "A new tile appears after each valid move.",
@@ -590,6 +597,7 @@ function render2048StaticText() {
   g2048ScoreEl.textContent = `${t2048("score")}: ${g2048Score}`;
   g2048BestEl.textContent = `${t2048("best")}: ${g2048Best}`;
   g2048NewBtn.textContent = t2048("newGame");
+  g2048TouchTitleEl.textContent = t2048("touchTitle");
   g2048TipsTitleEl.textContent = t2048("tipsTitle");
   g2048Tip1El.textContent = t2048("tip1");
   g2048Tip2El.textContent = t2048("tip2");
@@ -752,6 +760,55 @@ g2048LangEnBtn.addEventListener("click", () => {
   g2048Language = "en";
   render2048StaticText();
 });
+
+g2048UpBtn.addEventListener("click", () => move2048("up"));
+g2048LeftBtn.addEventListener("click", () => move2048("left"));
+g2048DownBtn.addEventListener("click", () => move2048("down"));
+g2048RightBtn.addEventListener("click", () => move2048("right"));
+
+let g2048TouchStartX = 0;
+let g2048TouchStartY = 0;
+
+g2048GridEl.addEventListener(
+  "touchstart",
+  (event) => {
+    const touch = event.changedTouches[0];
+    if (!touch) {
+      return;
+    }
+    g2048TouchStartX = touch.clientX;
+    g2048TouchStartY = touch.clientY;
+  },
+  { passive: true },
+);
+
+g2048GridEl.addEventListener(
+  "touchend",
+  (event) => {
+    const touch = event.changedTouches[0];
+    if (!touch) {
+      return;
+    }
+
+    const dx = touch.clientX - g2048TouchStartX;
+    const dy = touch.clientY - g2048TouchStartY;
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+    const threshold = 24;
+
+    if (Math.max(absX, absY) < threshold) {
+      return;
+    }
+
+    if (absX > absY) {
+      move2048(dx > 0 ? "right" : "left");
+      return;
+    }
+
+    move2048(dy > 0 ? "down" : "up");
+  },
+  { passive: true },
+);
 
 window.addEventListener("keydown", (event) => {
   const activeTab = document.querySelector(".tab-btn.is-active");
