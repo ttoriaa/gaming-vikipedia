@@ -136,7 +136,7 @@ select {
 .top-toolbar {
   margin-top: 0.1rem;
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 1fr;
   gap: 0.7rem;
   align-items: end;
   background: linear-gradient(120deg, #0f172a, #1e293b);
