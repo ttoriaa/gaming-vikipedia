@@ -57,16 +57,26 @@ const sudokuTip3El = document.getElementById("sudokuTip3");
 const sudokuLangZhBtn = document.getElementById("sudokuLangZhBtn");
 const sudokuLangEnBtn = document.getElementById("sudokuLangEnBtn");
 
+const snakeTitleEl = document.getElementById("snakeTitle");
+const snakeDescEl = document.getElementById("snakeDesc");
 const snakeBoardEl = document.getElementById("snakeBoard");
+const snakeTouchTitleEl = document.getElementById("snakeTouchTitle");
+const snakeStatusTitleEl = document.getElementById("snakeStatusTitle");
 const snakeStateEl = document.getElementById("snakeState");
 const snakeScoreEl = document.getElementById("snakeScore");
 const snakeBestEl = document.getElementById("snakeBest");
 const snakeStartBtn = document.getElementById("snakeStartBtn");
 const snakeResetBtn = document.getElementById("snakeResetBtn");
+const snakeTipsTitleEl = document.getElementById("snakeTipsTitle");
+const snakeTip1El = document.getElementById("snakeTip1");
+const snakeTip2El = document.getElementById("snakeTip2");
+const snakeTip3El = document.getElementById("snakeTip3");
 const snakeUpBtn = document.getElementById("snakeUpBtn");
 const snakeLeftBtn = document.getElementById("snakeLeftBtn");
 const snakeDownBtn = document.getElementById("snakeDownBtn");
 const snakeRightBtn = document.getElementById("snakeRightBtn");
+const snakeLangZhBtn = document.getElementById("snakeLangZhBtn");
+const snakeLangEnBtn = document.getElementById("snakeLangEnBtn");
 
 const PIECE_MAP = {
   p: "♟",
@@ -104,7 +114,7 @@ let currentLanguage = "zh";
 const I18N = {
   zh: {
     htmlLang: "zh-CN",
-    title: "///M Chess",
+    title: "///M Playground",
     subtitle: "Sheer Driving Pleasure.",
     statusTitle: "对局状态",
     ai1: "简单（随机）",
@@ -129,7 +139,7 @@ const I18N = {
   },
   en: {
     htmlLang: "en",
-    title: "///M Chess",
+    title: "///M Playground",
     subtitle: "Sheer Driving Pleasure.",
     statusTitle: "Game Status",
     ai1: "Easy (Random)",
@@ -890,6 +900,46 @@ let snakeBest = 0;
 let snakeSpeed = 170;
 let snakeStatus = "ready";
 let snakeTimerId = null;
+let snakeLanguage = "zh";
+
+const SNAKE_I18N = {
+  zh: {
+    title: "///M Snake",
+    desc: "吃到红点会变长，撞墙或撞到自己就结束。",
+    touchTitle: "触控方向",
+    statusTitle: "游戏状态",
+    stateReady: "准备开始",
+    stateRunning: "进行中",
+    statePaused: "已暂停",
+    stateGameOver: "游戏结束",
+    score: "分数",
+    best: "最高分",
+    startPause: "开始 / 暂停",
+    reset: "重新开始",
+    tipsTitle: "Tips",
+    tip1: "支持方向键和屏幕方向按钮。",
+    tip2: "每吃一个食物得 10 分。",
+    tip3: "速度会逐渐变快。",
+  },
+  en: {
+    title: "///M Snake",
+    desc: "Eat red food to grow. Hit a wall or yourself and the game ends.",
+    touchTitle: "Touch Controls",
+    statusTitle: "Game Status",
+    stateReady: "Ready",
+    stateRunning: "In progress",
+    statePaused: "Paused",
+    stateGameOver: "Game over",
+    score: "Score",
+    best: "Best",
+    startPause: "Start / Pause",
+    reset: "Restart",
+    tipsTitle: "Tips",
+    tip1: "Use arrow keys and on-screen direction buttons.",
+    tip2: "Each food gives 10 points.",
+    tip3: "Speed gradually increases.",
+  },
+};
 
 const SUDOKU_I18N = {
   zh: {
@@ -1072,15 +1122,32 @@ sudokuLangEnBtn.addEventListener("click", () => {
 
 function renderSnakeStatus() {
   const statusText = {
-    ready: "准备开始",
-    running: "进行中",
-    paused: "已暂停",
-    gameOver: "游戏结束",
+    ready: SNAKE_I18N[snakeLanguage].stateReady,
+    running: SNAKE_I18N[snakeLanguage].stateRunning,
+    paused: SNAKE_I18N[snakeLanguage].statePaused,
+    gameOver: SNAKE_I18N[snakeLanguage].stateGameOver,
   }[snakeStatus];
 
   snakeStateEl.textContent = statusText;
-  snakeScoreEl.textContent = `Score: ${snakeScore}`;
-  snakeBestEl.textContent = `Best: ${snakeBest}`;
+  snakeScoreEl.textContent = `${SNAKE_I18N[snakeLanguage].score}: ${snakeScore}`;
+  snakeBestEl.textContent = `${SNAKE_I18N[snakeLanguage].best}: ${snakeBest}`;
+}
+
+function renderSnakeStaticText() {
+  const text = SNAKE_I18N[snakeLanguage];
+  snakeTitleEl.textContent = text.title;
+  snakeDescEl.textContent = text.desc;
+  snakeTouchTitleEl.textContent = text.touchTitle;
+  snakeStatusTitleEl.textContent = text.statusTitle;
+  snakeStartBtn.textContent = text.startPause;
+  snakeResetBtn.textContent = text.reset;
+  snakeTipsTitleEl.textContent = text.tipsTitle;
+  snakeTip1El.textContent = text.tip1;
+  snakeTip2El.textContent = text.tip2;
+  snakeTip3El.textContent = text.tip3;
+  snakeLangZhBtn.classList.toggle("is-active", snakeLanguage === "zh");
+  snakeLangEnBtn.classList.toggle("is-active", snakeLanguage === "en");
+  renderSnakeStatus();
 }
 
 function snakeOccupied(x, y) {
@@ -1222,6 +1289,14 @@ snakeUpBtn.addEventListener("click", () => setSnakeDirection("up"));
 snakeLeftBtn.addEventListener("click", () => setSnakeDirection("left"));
 snakeDownBtn.addEventListener("click", () => setSnakeDirection("down"));
 snakeRightBtn.addEventListener("click", () => setSnakeDirection("right"));
+snakeLangZhBtn.addEventListener("click", () => {
+  snakeLanguage = "zh";
+  renderSnakeStaticText();
+});
+snakeLangEnBtn.addEventListener("click", () => {
+  snakeLanguage = "en";
+  renderSnakeStaticText();
+});
 
 function activateTab(tabName) {
   tabButtons.forEach((btn) => {
@@ -1253,3 +1328,4 @@ updateStatus();
 init2048Board();
 pickSudoku();
 resetSnake();
+renderSnakeStaticText();

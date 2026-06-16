@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>///M Chess</title>
+    <title>///M Playground</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,7 +15,7 @@
   <body>
     <main class="app">
       <header class="hero">
-        <h1 id="pageTitle" class="m-title">///M Chess</h1>
+        <h1 id="pageTitle" class="m-title">///M Playground</h1>
         <p id="pageSubtitle" class="subtitle">Sheer Driving Pleasure.</p>
         <nav class="tab-bar" aria-label="Game Tabs" role="tablist">
           <button class="tab-btn is-active" data-tab="chess" type="button" role="tab" aria-selected="true" aria-controls="panel-chess">Chess</button>
@@ -27,6 +27,9 @@
 
       <section id="panel-chess" class="tab-panel is-active" data-panel="chess" role="tabpanel">
         <section class="board-wrap">
+          <div class="mini-header">
+            <h2>///M Chess</h2>
+          </div>
           <div class="top-toolbar">
             <div class="lang-switch" role="group" aria-label="language switch">
               <button id="langZhBtn" type="button" class="lang-btn is-active">中文</button>
@@ -174,6 +177,11 @@
         </section>
 
         <aside class="panel">
+          <div class="lang-switch" role="group" aria-label="snake language switch">
+            <button id="snakeLangZhBtn" type="button" class="lang-btn is-active">中文</button>
+            <button id="snakeLangEnBtn" type="button" class="lang-btn">English</button>
+          </div>
+
           <div class="status-card">
             <h2 id="snakeStatusTitle">Game Status</h2>
             <p id="snakeState">准备开始</p>
