@@ -1,11 +1,24 @@
 const boardEl = document.getElementById("board");
 const trailLayerEl = document.getElementById("trailLayer");
+const pageTitleEl = document.getElementById("pageTitle");
+const pageSubtitleEl = document.getElementById("pageSubtitle");
+const statusTitleEl = document.getElementById("statusTitle");
 const statusEl = document.getElementById("status");
 const turnEl = document.getElementById("turn");
 const lastMoveEl = document.getElementById("lastMove");
+const aiLevelLabelEl = document.getElementById("aiLevelLabel");
+const aiOpt1El = document.getElementById("aiOpt1");
+const aiOpt2El = document.getElementById("aiOpt2");
+const aiOpt3El = document.getElementById("aiOpt3");
 const resetBtn = document.getElementById("resetBtn");
 const undoBtn = document.getElementById("undoBtn");
 const aiLevelEl = document.getElementById("aiLevel");
+const tipsTitleEl = document.getElementById("tipsTitle");
+const tip1El = document.getElementById("tip1");
+const tip2El = document.getElementById("tip2");
+const tip3El = document.getElementById("tip3");
+const langZhBtn = document.getElementById("langZhBtn");
+const langEnBtn = document.getElementById("langEnBtn");
 
 const PIECE_MAP = {
   p: "♟",
@@ -38,6 +51,104 @@ let selectedSquare = null;
 let possibleMoves = [];
 let isAiThinking = false;
 let lastMovePath = null;
+let currentLanguage = "zh";
+
+const I18N = {
+  zh: {
+    htmlLang: "zh-CN",
+    title: "国际象棋 · Human vs AI",
+    subtitle: "你执白棋，电脑执黑棋。点击棋子并点击目标格子完成走子。",
+    statusTitle: "对局状态",
+    aiLevelLabel: "AI 难度",
+    ai1: "简单（随机）",
+    ai2: "中等（贪心）",
+    ai3: "困难（浅层搜索）",
+    undo: "悔棋",
+    reset: "重新开始",
+    tipsTitle: "说明",
+    tip1: "支持将军、将死、和棋判定。",
+    tip2: "兵升变默认升后。",
+    tip3: "悔棋会回退双方各一步。",
+    turnLabel: "当前回合",
+    white: "白棋",
+    black: "黑棋",
+    lastMoveLabel: "上一步",
+    checkmateWhiteWin: "黑棋将死，白棋获胜",
+    checkmateBlackWin: "白棋将死，黑棋获胜",
+    draw: "和棋",
+    check: "{turn}被将军",
+    aiThinking: "电脑思考中...",
+    inProgress: "对局进行中",
+    loading: "加载中...",
+  },
+  en: {
+    htmlLang: "en",
+    title: "Chess · Human vs AI",
+    subtitle: "You play White, AI plays Black. Click a piece and then a target square to move.",
+    statusTitle: "Game Status",
+    aiLevelLabel: "AI Difficulty",
+    ai1: "Easy (Random)",
+    ai2: "Medium (Greedy)",
+    ai3: "Hard (Shallow Search)",
+    undo: "Undo",
+    reset: "Restart",
+    tipsTitle: "Tips",
+    tip1: "Check, checkmate, and draw are fully supported.",
+    tip2: "Pawn promotion defaults to queen.",
+    tip3: "Undo rolls back one move for both sides.",
+    turnLabel: "Turn",
+    white: "White",
+    black: "Black",
+    lastMoveLabel: "Last move",
+    checkmateWhiteWin: "Checkmate: White wins",
+    checkmateBlackWin: "Checkmate: Black wins",
+    draw: "Draw",
+    check: "{turn} is in check",
+    aiThinking: "AI is thinking...",
+    inProgress: "Game in progress",
+    loading: "Loading...",
+  },
+};
+
+function t(key) {
+  return I18N[currentLanguage][key];
+}
+
+function getTurnTextByColor(color) {
+  return color === "w" ? t("white") : t("black");
+}
+
+function renderStaticText() {
+  document.documentElement.lang = t("htmlLang");
+  document.title = t("title");
+  pageTitleEl.textContent = t("title");
+  pageSubtitleEl.textContent = t("subtitle");
+  statusTitleEl.textContent = t("statusTitle");
+  aiLevelLabelEl.textContent = t("aiLevelLabel");
+  aiOpt1El.textContent = t("ai1");
+  aiOpt2El.textContent = t("ai2");
+  aiOpt3El.textContent = t("ai3");
+  undoBtn.textContent = t("undo");
+  resetBtn.textContent = t("reset");
+  tipsTitleEl.textContent = t("tipsTitle");
+  tip1El.textContent = t("tip1");
+  tip2El.textContent = t("tip2");
+  tip3El.textContent = t("tip3");
+  langZhBtn.classList.toggle("is-active", currentLanguage === "zh");
+  langEnBtn.classList.toggle("is-active", currentLanguage === "en");
+}
+
+function renderTurnText() {
+  turnEl.textContent = `${t("turnLabel")}: ${getTurnTextByColor(game.turn())}`;
+}
+
+function renderLastMoveText() {
+  if (!lastMovePath) {
+    lastMoveEl.textContent = `${t("lastMoveLabel")}: -`;
+    return;
+  }
+  lastMoveEl.textContent = `${t("lastMoveLabel")}: ${lastMovePath.from} -> ${lastMovePath.to}`;
+}
 
 function squareName(rankIndex, fileIndex) {
   return `${FILES[fileIndex]}${8 - rankIndex}`;
@@ -80,11 +191,11 @@ function syncLastMoveFromHistory() {
   const last = history[history.length - 1];
   if (!last) {
     lastMovePath = null;
-    lastMoveEl.textContent = "上一步：-";
+    renderLastMoveText();
     return;
   }
   lastMovePath = { from: last.from, to: last.to };
-  lastMoveEl.textContent = `上一步：${last.from} -> ${last.to}`;
+  renderLastMoveText();
 }
 
 function renderBoard() {
@@ -129,32 +240,33 @@ function renderBoard() {
 }
 
 function getTurnText() {
-  return game.turn() === "w" ? "白棋" : "黑棋";
+  return getTurnTextByColor(game.turn());
 }
 
 function updateStatus(lastMove = null) {
-  turnEl.textContent = `当前回合：${getTurnText()}`;
+  renderTurnText();
 
   if (lastMove) {
-    lastMoveEl.textContent = `上一步：${lastMove.from} -> ${lastMove.to}`;
+    lastMovePath = { from: lastMove.from, to: lastMove.to };
   }
+  renderLastMoveText();
 
   if (game.in_checkmate()) {
-    statusEl.textContent = game.turn() === "w" ? "黑棋将死，白棋获胜" : "白棋将死，黑棋获胜";
+    statusEl.textContent = game.turn() === "w" ? t("checkmateBlackWin") : t("checkmateWhiteWin");
     return;
   }
 
   if (game.in_draw()) {
-    statusEl.textContent = "和棋";
+    statusEl.textContent = t("draw");
     return;
   }
 
   if (game.in_check()) {
-    statusEl.textContent = `${getTurnText()}被将军`;
+    statusEl.textContent = t("check").replace("{turn}", getTurnText());
     return;
   }
 
-  statusEl.textContent = isAiThinking ? "电脑思考中..." : "对局进行中";
+  statusEl.textContent = isAiThinking ? t("aiThinking") : t("inProgress");
 }
 
 function clearSelection() {
@@ -355,7 +467,7 @@ resetBtn.addEventListener("click", () => {
   clearSelection();
   isAiThinking = false;
   lastMovePath = null;
-  lastMoveEl.textContent = "上一步：-";
+  renderLastMoveText();
   renderBoard();
   updateStatus();
 });
@@ -373,5 +485,18 @@ undoBtn.addEventListener("click", () => {
   updateStatus();
 });
 
+langZhBtn.addEventListener("click", () => {
+  currentLanguage = "zh";
+  renderStaticText();
+  updateStatus();
+});
+
+langEnBtn.addEventListener("click", () => {
+  currentLanguage = "en";
+  renderStaticText();
+  updateStatus();
+});
+
+renderStaticText();
 renderBoard();
 updateStatus();

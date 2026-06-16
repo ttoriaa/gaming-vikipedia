@@ -192,6 +192,23 @@ select {
   font-weight: 600;
 }
 
+.lang-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
+}
+
+.lang-btn {
+  padding: 0.48rem 0.5rem;
+}
+
+.lang-btn.is-active {
+  border-color: #111827;
+  background: #111827;
+  color: #f9fafb;
+}
+
 select,
 button {
   width: 100%;
